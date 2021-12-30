@@ -1,0 +1,94 @@
+<html>
+      <body>
+            <div id="table-total" style="font-size: 20px;">0</div>
+            <button onclick="reloadData()">Reload data</button>
+            <table>
+                  <thead>
+                        <th>image</th>
+                        <th>title</th>
+                        <th>price</th>
+                        <th>discount</th>
+                  </thead>
+                  <tbody id="table-body">
+                        <tr class="table-row">
+                              <td class="table-cell"></td>
+                              <td>image</td>
+                              <td>tite</td>
+                              <td>price</td>
+                              <td>discount</td>
+                        </tr>
+                  </tbody>
+            </table>
+      </body>
+</html>
+<script>
+      window.addEventListener("load", function () {
+            // alert('onload');
+      });
+      var shoplist = [];
+      var tableBody = document.getElementById('table-body');
+      function renderShoppingTable () {
+            var tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            shoplist.forEach((item, i ) => {
+                  let row = document.createElement("tr");
+                  row.setAttribute("class", "table-row");
+                  let cel1 = document.createElement("td");
+                  cel1.setAttribute("class", "table-cell");
+                  cel1.innerHTML = item.title;
+                  let cel2 = document.createElement("td");
+                  cel2.innerHTML = item.price;
+                  let cel3 = document.createElement("td");
+                  cel3.innerHTML = `<img src="${item.image}" height="100px" width="150px" />`;
+                  let discount = document.createElement("td");
+                  discount.innerHTML = '<input type="text" />';
+                  row.appendChild(cel3);
+                  row.appendChild(cel1);
+                  row.appendChild(cel2);
+                  row.appendChild(discount);
+                  row.onclick = function () {
+                        alert(`selected ${item.title} ${i}`);
+                        if (row.getAttribute('class').indexOf('table-row-selected') > -1) {
+                              row.setAttribute('class', 'table-row')
+                        } else {
+                              row.setAttribute('class', 'table-row-selected')
+                        }
+                  };
+                  tableBody.appendChild(row);
+            });
+
+      }
+      function calculateTotal () {
+            var totalDiv = document.getElementById('table-total');
+            totalDiv.innerHTML = '';
+            var total = 0;
+            shoplist.forEach(item => {
+                  total = total + parseInt(item.price);
+            });
+            totalDiv.innerHTML = 'Total Amount is : Rs.' + total;
+      }
+      function reloadData() {
+            var totalDiv = document.getElementById('table-total');
+            totalDiv.innerHTML = '0';
+            tableBody.innerHTML = 'Loadign items ... wait,,,';
+            fetch('https://fakestoreapi.com/products').then(response => response.json())
+            .then(data => {
+            shoplist = data;
+            renderShoppingTable();
+            calculateTotal();
+            });
+      }
+      reloadData();
+</script>
+<style>
+      .table-row {
+            background-color: #c5b0b0;
+      }
+      .table-row-selected {
+            background-color: #11883e;
+      }
+
+      .table-cell {
+            border: 1px solid #333;
+      }
+</style>

@@ -1,0 +1,10 @@
+{
+      "root": [
+            {
+                  "item_code": "i001",
+                  "item_name": "pencil",
+                  "cost": "50.00",
+                  "discount": "2"
+            }
+      ]
+}
