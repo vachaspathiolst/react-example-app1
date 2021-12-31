@@ -1,0 +1,130 @@
+<html>
+      <!-- Load vue -->
+      <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+      <!-- load vue -->
+      <script src="shopping-cart-vue.js"></script> <!--  vue componentss -->
+      <style>
+            .table-row {
+                  color: blue;
+            }
+            .table-row:hover {
+                  cursor: pointer;
+            }
+            .table-row-selected {
+                  color: red;
+                  background-color: #eee;
+            }
+            .avatar-img {
+                  border:  1px solid #345;
+                  max-width: 150px;
+                  border-radius: 10px;
+            }
+            .avatar-hng {
+                  color: #345;
+            }
+            .red {
+                  color: red;
+            }
+            .green {
+                  color: green;
+            }
+      </style>
+      <body>
+            <h3>React shoping list</h3>
+            <div id="start-ehere">
+                  <div>
+                        <button @click="loadStoreData()">Reload Data</button>
+                        <span v-if="isLoading === true">{{loadingMsg}}</span>Total Items {{shoppingList.length}}
+                        <div>
+                              Price Limit : <input v-model="inputLimit" type="number" />
+                        </div>
+                  </div>
+                  <hr />
+                  <div style="height: 500px; overflow:auto;">
+                        {{appTitle}}
+                        <table>
+                              selected item ({{selectedItems.length}}) ids : {{selectedItems}}
+                              <tr v-for="item in shoppingList" :key="item.id" :class="checkSelected(item.id) === true ? 'table-row-selected' : 'table-row' " @click="addSelected(item.id)">
+                                    <td>
+                                          <!-- <img :src="item.image" class="avatar-img" /> -->
+                                          <avatar-image :image="item.image" :title="item.title" />
+                                    </td>
+                                    <td>
+                                          <h3 class="avatar-hng">
+                                          {{item.title}}
+                                          </h3>
+                                    </td>
+                                    <td>
+                                          <!-- <h4 :class="parseFloat(item.price) > priceLimit ? 'red' : 'green' ">Price: Rs {{item.price}}</h4> -->
+                                          <price-limit :price="parseFloat(item.price)" :limit="parseFloat(inputLimit)" />
+                                    </td>
+                              </tr>
+                        </table>
+                  </div>
+                  <hr />
+                  Vue - table
+                  <div>
+                        <shoping-list-table />
+                  </div>
+
+            </div><!-- index-1.js -->
+
+      </body>
+      <script>
+            var vm = new Vue({
+                  components: {
+                        AvatarImage,
+                        PriceLimit,
+                        shopingListTable
+                  },
+                  el: '#start-ehere', // target
+                  data: {
+                        appTitle: 'Vue Instance',
+                        shoppingList: [],
+                        isLoading: false,
+                        priceLimit: 100,
+                        selectedItems: [],
+                        inputLimit: 100
+                        // loadingMsg: 'Data is not loaded.'
+                  },
+                  computed: {
+                        loadingMsg () {
+                              if (this.isLoading === true) {
+                                    return 'Data is loading...';
+                              } else {
+                                    return '';
+                              }
+                        }
+                  },
+                  mounted(){
+                        alert('component mounted');
+                        this.loadStoreData();
+                  },
+                  methods: {
+                        checkSelected (id) {
+                              return this.selectedItems.indexOf(id) > -1;
+                        },
+                        loadStoreData () {
+                              let th = this;
+                              th.isLoading = true;
+                              fetch('https://fakestoreapi.com/products').then(response => response.json())
+                              .then(data => {
+                                    th.shoppingList = data;
+                                    th.isLoading = false;
+                              });
+                        },
+                        addSelected (id) { // toggle selection
+                              // alert(id)
+                              var inx = this.selectedItems.indexOf(id)
+                              if(inx > -1) {
+                                    this.selectedItems.splice(inx, 1);
+                              } else {
+                                    this.selectedItems.push(id);
+                              }
+                        },
+                  },
+
+            })
+      </script>
+
+</html>

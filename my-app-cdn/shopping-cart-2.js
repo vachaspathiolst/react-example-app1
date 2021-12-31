@@ -77,11 +77,14 @@ class ShopingTableRow extends React.Component {
       ),
       e(
         'td',
-        {},
+        {
+          className: 'table-cell'
+        },
         e(
           PriceLimit,
           {
-            price: this.props.price
+            price: this.props.price,
+            inputLimit: this.props.inputLimit
           }
         )
       )
@@ -94,7 +97,8 @@ class ShopingTableBody extends React.Component {
     super(props);
     this.state = {
       tableData: [],
-      isLoading: false
+      isLoading: false,
+      inputLimit: 100
     }
     // this.loadStoreData();
   }
@@ -102,15 +106,24 @@ class ShopingTableBody extends React.Component {
     alert('componentDidMount');
     this.loadStoreData();
   }
+  handleLimitChange (e) {
+    this.setState({
+      tableData: this.state.tableData, // may not be right :(
+      isLoading: false,
+      inputLimit: e.target.value
+    });
+  }
+
   loadStoreData(){
     let th = this;
     th.setState({
       tableData: this.state.tableData, // may not be right :(
-      isLoading: true
+      isLoading: true,
+      inputLimit: this.state.inputLimit
     });
     fetch('https://fakestoreapi.com/products').then(response => response.json())
     .then(data => {
-      th.setState({tableData: data, isLoading: false});
+      th.setState({tableData: data, isLoading: false, inputLimit: this.state.inputLimit});
         // shoplist = data;
       });
   }
@@ -124,15 +137,35 @@ class ShopingTableBody extends React.Component {
           title: item.title,
           price: item.price,
           category: item.category,
-          image: item.image
+          image: item.image,
+          inputLimit: this.state.inputLimit
         }
       )
       ));
 
     return e(
+      'div',
+      {},
+      e(
+        'label',
+        {
+        },
+        'Set a Limit : '
+      ),
+      e(
+        'input',
+        {
+          type: 'number',
+          value: this.state.inputLimit,
+          placeholder: 'Set limit',
+          onChange: (e) => this.handleLimitChange(e)
+        }
+      ),
+      e(
       'table',
       {},
-      e('thead',
+      e(
+        'thead',
         {
           style: {color: "red", cursor: "pointer", border: '1px solid #333'},
           onClick: () => this.loadStoreData() // to reload data
@@ -140,16 +173,31 @@ class ShopingTableBody extends React.Component {
         e(
           'th',
           {
-            colspan: 4
+            colSpan: 1
           },
-          `click here to reload data | click row to select | Data is ${this.state.isLoading ? '...Loading...' : 'Loaded'}`
+          `click here to reload data`
+        ),
+        e(
+          'th',
+          {
+            colSpan: 1
+          },
+          `click row to select`
+        ),
+        e(
+          'th',
+          {
+            colSpan: 1
+          },
+          `Data is ${ this.state.isLoading ? '...Loading...' : 'Loaded' }`
         )
       ),
       e(
         'tbody',
         {},
-        arr
-      )
+        arr,
+      ),
+      ),
     )
   }
 }
